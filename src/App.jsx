@@ -74,6 +74,7 @@ export default function App() {
                 suggestedPeople={suggestedPeople}
                 onAcceptPerson={acceptSuggestedPerson}
                 onDismissPerson={dismissSuggestedPerson}
+                currentQuestion={currentQuestion}
               />
             </div>
 
