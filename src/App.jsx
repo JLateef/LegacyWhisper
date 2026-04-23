@@ -24,6 +24,7 @@ export default function App() {
     knowledgeBase,
     activeView,
     currentPhase,
+    currentQuestion,
     startInterview,
     sendMessage,
     acceptSuggestedPerson,
