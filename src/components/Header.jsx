@@ -5,6 +5,7 @@ const VIEW_TABS = [
   { id: 'interview', label: 'Interview' },
   { id: 'connections', label: 'People & Links' },
   { id: 'documents', label: 'Documents' },
+  { id: 'graph', label: 'Knowledge Graph' },
   { id: 'summary', label: 'Knowledge Brief' },
 ];
 

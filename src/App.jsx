@@ -7,6 +7,7 @@ import ConnectionsPanel from './components/ConnectionsPanel.jsx';
 import ConnectionsView from './components/ConnectionsView.jsx';
 import DocumentsView from './components/DocumentsView.jsx';
 import SummaryView from './components/SummaryView.jsx';
+import KnowledgeGraphView from './components/KnowledgeGraphView.jsx';
 import { useInterview } from './hooks/useInterview.js';
 
 export default function App() {
@@ -109,6 +110,9 @@ export default function App() {
             onTagDocument={handleTagDoc}
           />
         )}
+
+        {/* Knowledge Graph view */}
+        {activeView === 'graph' && <KnowledgeGraphView />}
 
         {/* Summary view */}
         {activeView === 'summary' && (

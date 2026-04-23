@@ -63,9 +63,16 @@ async def ingest_documents(body: IngestRequest):
     # Single cognee.add() call with a list avoids UNIQUE constraint on dataset_database.
     paths = [str(Path(_registry[doc_id]["path"]).resolve()) for doc_id in body.doc_ids]
 
-    await cognee.add(data=paths, dataset_name=body.dataset_name)
+    # Verify files actually exist before handing off to cognee
+    missing_files = [p for p in paths if not Path(p).is_file()]
+    if missing_files:
+        raise HTTPException(status_code=422, detail=f"Files not found on disk: {missing_files}")
 
-    await cognee.cognify(datasets=[body.dataset_name])
+    try:
+        await cognee.add(data=paths, dataset_name=body.dataset_name)
+        await cognee.cognify(datasets=[body.dataset_name])
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Cognee ingestion failed: {exc}") from exc
 
     for doc_id in body.doc_ids:
         _registry[doc_id]["status"] = "ingested"
