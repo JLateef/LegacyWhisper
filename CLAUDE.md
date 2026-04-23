@@ -10,10 +10,14 @@ npm run dev       # http://localhost:5173
 npm run build
 npm run preview
 
-# FastAPI backend (first run: pip install -r backend/requirements.txt)
-cd backend && uvicorn main:app --reload --port 8000
+# FastAPI backend — requires Python 3.12 (cognee/kuzu don't support 3.13+)
+# First-time setup:
+#   uv python install 3.12
+#   cd backend && uv venv --python 3.12 .venv && source .venv/bin/activate
+#   uv pip install -r requirements.txt
+cd backend && source .venv/bin/activate && uvicorn main:app --reload --port 8000
 
-# Streamlit knowledge explorer (first run: pip install -r cognee_explorer/requirements.txt)
+# Streamlit knowledge explorer (first run: uv pip install -r cognee_explorer/requirements.txt)
 cd cognee_explorer && streamlit run app.py   # http://localhost:8501
 ```
 

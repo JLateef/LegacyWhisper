@@ -13,21 +13,14 @@ load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Configure Cognee from environment before the server starts accepting requests
-    llm_config = {
-        "provider": os.getenv("LLM_PROVIDER", "openai"),
-        "model": os.getenv("LLM_MODEL", "gpt-4o-mini"),
-        "api_key": os.getenv("LLM_API_KEY", ""),
-    }
-    embedding_config = {
-        "provider": os.getenv("EMBEDDING_PROVIDER", "openai"),
-        "model": os.getenv("EMBEDDING_MODEL", "text-embedding-3-small"),
-        "dimensions": int(os.getenv("EMBEDDING_DIMENSIONS", "1536")),
-        "api_key": os.getenv("LLM_API_KEY", ""),
-    }
+    # Cognee config uses individual setters (not a dict with "provider")
+    cognee.config.set_llm_provider(os.getenv("LLM_PROVIDER", "openai"))
+    cognee.config.set_llm_model(os.getenv("LLM_MODEL", "gpt-4o-mini"))
+    cognee.config.set_llm_api_key(os.getenv("LLM_API_KEY", ""))
 
-    cognee.config.set_llm_config(llm_config)
-    cognee.config.set_embedding_config(embedding_config)
+    cognee.config.set_embedding_provider(os.getenv("EMBEDDING_PROVIDER", "openai"))
+    cognee.config.set_embedding_model(os.getenv("EMBEDDING_MODEL", "text-embedding-3-small"))
+    cognee.config.set_embedding_api_key(os.getenv("LLM_API_KEY", ""))
 
     yield
 
