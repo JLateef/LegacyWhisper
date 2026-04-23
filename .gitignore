@@ -3,3 +3,16 @@ dist/
 .env
 .env.local
 .env*.local
+
+# Python backend
+backend/.env
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/__pycache__/
+backend/routers/__pycache__/
+*.pyc
+cognee_explorer/__pycache__/
+
+# Cognee local databases
+.cognee_system/
+cognee_db/

@@ -1,0 +1,6 @@
+cognee[docs]
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+aiofiles
