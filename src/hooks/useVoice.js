@@ -25,7 +25,7 @@ export function useVoice({ onTranscript, currentQuestion }) {
 
     try {
       const vb = new VocalBridge({
-        auth: { apiKey: API_KEY },
+        auth: { tokenUrl: '/api/voice-token' },
         agentId: AGENT_ID,
         participantName: 'Interviewee',
         autoPlayAudio: true,
