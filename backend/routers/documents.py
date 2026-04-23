@@ -59,13 +59,11 @@ async def ingest_documents(body: IngestRequest):
     if missing:
         raise HTTPException(status_code=404, detail=f"Unknown doc IDs: {missing}")
 
-    for doc_id in body.doc_ids:
-        record = _registry[doc_id]
-        await cognee.add(
-            data=Path(record["path"]),
-            dataset_name=body.dataset_name,
-        )
-        record["status"] = "added"
+    # cognee's ingestion only accepts str, not pathlib.Path — pass absolute path strings.
+    # Single cognee.add() call with a list avoids UNIQUE constraint on dataset_database.
+    paths = [str(Path(_registry[doc_id]["path"]).resolve()) for doc_id in body.doc_ids]
+
+    await cognee.add(data=paths, dataset_name=body.dataset_name)
 
     await cognee.cognify(datasets=[body.dataset_name])
 
