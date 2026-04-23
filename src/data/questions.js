@@ -84,6 +84,72 @@ export const PHASES = [
     ],
   },
   {
+    id: 'financials',
+    name: 'Property Financials',
+    icon: '¥',
+    color: 'teal',
+    description: 'Fees, yield & reporting',
+    estimatedMinutes: 20,
+    questions: [
+      {
+        id: 'f1',
+        text: `Let's talk about the building's financial health — the numbers that determine whether this asset actually performs.\n\nAre the monthly 管理費 (kanrihi / management fee) and 修繕積立金 (shuzen tsumitatekin / repair reserve) stable? How often have they increased, and by how much? Is another increase expected?`,
+        followUps: [
+          { triggers: ['increase', 'rise', 'raised', 'went up', 'higher', 'expect'], text: `That's important context. Was the increase communicated in advance, and was there a formal vote by the management association? Do you know what triggered it?` },
+        ],
+        knowledgeTag: 'building_fees',
+      },
+      {
+        id: 'f2',
+        text: `Are the common area utilities — electricity, water, elevator power — separately metered, or are they bundled into the building management fee?\n\nAnd separately: what is the average delinquency rate on management fees across the building? Are any co-owners consistently behind on payments?`,
+        followUps: [
+          { triggers: ['behind', 'delinquent', 'not paying', 'unpaid', 'arrears', 'issue'], text: `Delinquencies weaken the reserve fund for everyone. Is the management association actively pursuing those owners, or has it been left unresolved?` },
+        ],
+        knowledgeTag: 'building_fees',
+      },
+      {
+        id: 'f3',
+        text: `What is the actual net yield on this property — after subtracting management fees, property taxes, repair reserves, and any other recurring costs?\n\nAnd what is the building's average occupancy rate? Not the unit's occupancy, but the building-wide figure — and how has it trended over the past few years?`,
+        followUps: [
+          { triggers: ['gross', 'advertised', 'percent', '%', 'low', 'vacant', 'empty'], text: `Gross yields in Japan are often significantly higher than net. Can you walk me through the actual cost breakdown that gets you to the real number?` },
+        ],
+        knowledgeTag: 'financial_yield',
+      },
+      {
+        id: 'f4',
+        text: `Does the building allow short-term rentals — Airbnb, Rakuten STAY, or similar platforms? If not, how strictly is this enforced by the management association?\n\nHave there been any violations, complaints, or legal issues related to this?`,
+        followUps: [
+          { triggers: ['airbnb', 'short', 'rental', 'illegal', 'violation', 'complaint'], text: `This can have serious consequences for the building's reputation and valuation. Was it resolved formally, or is it still an ongoing situation?` },
+        ],
+        knowledgeTag: 'rental_policy',
+      },
+      {
+        id: 'f5',
+        text: `What is the strategy for tenant turnover and re-leasing when a unit becomes vacant?\n\nIs professional photography used? Is the listing placed across major platforms — SUUMO, AtHome, Homes? What is the average time-to-lease, and is there a preferred agency relationship?`,
+        followUps: [
+          { triggers: ['slow', 'vacant', 'empty', 'hard', 'difficult', 'agency', 'broker'], text: `Vacancy in Tokyo can be very expensive quickly. Is there a specific agency or contact who has performed best historically for this building or this unit type?` },
+        ],
+        knowledgeTag: 'leasing_strategy',
+      },
+      {
+        id: 'f6',
+        text: `What is the management fee structure — is it a percentage of gross rent, or a flat monthly fee? What is included, and what is charged separately?\n\nSpecifically: is tenant placement (入居者募集) included, or billed separately — and if so, at what rate?`,
+        followUps: [
+          { triggers: ['percent', '%', 'one month', 'flat', 'extra', 'additional', 'placement'], text: `Standard in Japan is 5–10% of gross rent plus one month's rent for tenant placement. Is what's in place here consistent with that, and has it ever been renegotiated?` },
+        ],
+        knowledgeTag: 'management_fees',
+      },
+      {
+        id: 'f7',
+        text: `Finally on the financial side: are monthly reports provided in English? Do they include a full cash-flow statement and copies of the original vendor invoices?\n\nIf not — who currently receives the reports, in what format, and is there a contact at the management company who can produce English-language summaries on request?`,
+        followUps: [
+          { triggers: ['no', 'japanese', 'not', 'only', 'never', 'translation'], text: `For non-Japanese-speaking owners or successors, this is a significant gap. Has anyone previously requested an English-language summary, and what was the response?` },
+        ],
+        knowledgeTag: 'financial_reporting',
+      },
+    ],
+  },
+  {
     id: 'tribal',
     name: 'Tribal Knowledge',
     icon: '◎',
@@ -177,6 +243,12 @@ export const KNOWLEDGE_TAG_LABELS = {
   building_quirks: 'Building Quirks & Hidden Knowledge',
   recurring_issues: 'Recurring Issues & Patterns',
   maintenance_intel: 'Maintenance & Infrastructure Intel',
+  building_fees: '管理費・修繕積立金 (Kanrihi & Repair Reserve)',
+  financial_yield: 'Net Yield & Occupancy Rate',
+  rental_policy: 'Short-Term Rental Policy',
+  leasing_strategy: 'Tenant Turnover & Re-leasing Strategy',
+  management_fees: 'Management Fee Structure',
+  financial_reporting: 'Monthly Financial Reporting',
   emergency_protocols: 'Emergency Contacts & Protocols',
   informal_agreements: 'Informal Agreements',
   organizational_dynamics: 'Team Dynamics',
@@ -200,6 +272,7 @@ export const ACKNOWLEDGMENTS = [
 export const PHASE_TRANSITIONS = {
   people: "Good. Now let's shift from background to the people — the relationships that make this work possible.",
   building: "Thank you. Now I want to move into the building itself — the knowledge that lives in the walls and systems.",
+  financials: "Good. Now let's go deep on the financial picture — the numbers that are rarely documented but determine everything.",
   tribal: "Now we get to the most important part: the things that were never written down.",
   active: "Let's talk about what's currently in motion — the things that can't wait.",
   legacy: "One last phase. This is where we capture what you want to leave behind.",
