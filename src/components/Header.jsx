@@ -8,17 +8,24 @@ const VIEW_TABS = [
   { id: 'summary', label: 'Knowledge Brief' },
 ];
 
-export default function Header({ interviewee, phaseIdx, phase, activeView, setActiveView, connectionCount }) {
+export default function Header({ interviewee, phaseIdx, phase, activeView, setActiveView, connectionCount, onReset }) {
   const progress = phase === 'complete' ? 100 : Math.round(((phaseIdx) / PHASES.length) * 100);
 
   return (
     <header className="bg-slate-900 text-white flex-shrink-0">
       <div className="flex items-center justify-between px-5 py-3 border-b border-slate-700">
-        {/* Brand */}
-        <div className="flex items-center gap-3">
+        {/* Brand — click to return to home */}
+        <button
+          onClick={() => {
+            if (window.confirm('Return to the home screen? Your current session will be lost.')) {
+              onReset();
+            }
+          }}
+          className="flex items-center gap-3 hover:opacity-75 transition-opacity"
+        >
           <div className="w-7 h-7 bg-amber-400 rounded-lg flex items-center justify-center text-slate-900 font-bold text-sm">L</div>
           <span className="font-semibold text-sm tracking-tight">Legacy Whisperer</span>
-        </div>
+        </button>
 
         {/* Interviewee info */}
         {interviewee && (
@@ -28,7 +35,7 @@ export default function Header({ interviewee, phaseIdx, phase, activeView, setAc
             </div>
             <div>
               <div className="font-medium text-white text-xs">{interviewee.name}</div>
-              <div className="text-slate-400 text-xs">{interviewee.title} · {interviewee.property}</div>
+              <div className="text-slate-400 text-xs">{interviewee.title} · {interviewee.system}</div>
             </div>
           </div>
         )}

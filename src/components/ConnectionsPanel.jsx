@@ -3,8 +3,8 @@ import { KNOWLEDGE_TAG_LABELS } from '../data/questions.js';
 
 const RELATIONSHIP_OPTIONS = [
   'Direct Colleague', 'Team Lead / Manager', 'Direct Report',
-  'Key Tenant Contact', 'Trusted Vendor', 'Contractor',
-  'Emergency Contact', 'Cross-Department', 'Other',
+  'Architect / Designer', 'Support Provider', 'Consultant',
+  'External Vendor', 'Product Owner', 'Other',
 ];
 
 function ConnectionCard({ conn, onUpdate, knowledgeBase }) {

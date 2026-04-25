@@ -3,17 +3,20 @@ import { KNOWLEDGE_TAG_LABELS } from '../data/questions.js';
 
 const SECTION_ICONS = {
   background: '✦',
-  internal_relationships: '◈',
-  tenant_relationships: '◈',
-  vendor_relationships: '◈',
-  building_quirks: '⬡',
-  recurring_issues: '⬡',
-  maintenance_intel: '⬡',
-  emergency_protocols: '◎',
-  informal_agreements: '◎',
-  organizational_dynamics: '◎',
-  active_issues: '◐',
-  pending_commitments: '◐',
+  system_overview: '⬡',
+  architecture_decisions: '⬡',
+  fragile_areas: '⬡',
+  key_contacts: '◈',
+  expertise_map: '◈',
+  external_contacts: '◈',
+  onboarding_gotchas: '◎',
+  undocumented_behavior: '◎',
+  permanent_workarounds: '◎',
+  incident_response: '◐',
+  process_reality: '◐',
+  organizational_dynamics: '◐',
+  active_work: '◑',
+  pending_decisions: '◑',
   achievements: '✧',
   lessons_learned: '✧',
   additional_knowledge: '✧',
@@ -21,17 +24,20 @@ const SECTION_ICONS = {
 
 const SECTION_COLORS = {
   background: 'indigo',
-  internal_relationships: 'blue',
-  tenant_relationships: 'blue',
-  vendor_relationships: 'blue',
-  building_quirks: 'emerald',
-  recurring_issues: 'emerald',
-  maintenance_intel: 'emerald',
-  emergency_protocols: 'amber',
-  informal_agreements: 'amber',
-  organizational_dynamics: 'amber',
-  active_issues: 'rose',
-  pending_commitments: 'rose',
+  system_overview: 'emerald',
+  architecture_decisions: 'emerald',
+  fragile_areas: 'emerald',
+  key_contacts: 'blue',
+  expertise_map: 'blue',
+  external_contacts: 'blue',
+  onboarding_gotchas: 'amber',
+  undocumented_behavior: 'amber',
+  permanent_workarounds: 'amber',
+  incident_response: 'rose',
+  process_reality: 'rose',
+  organizational_dynamics: 'rose',
+  active_work: 'teal',
+  pending_decisions: 'teal',
   achievements: 'purple',
   lessons_learned: 'purple',
   additional_knowledge: 'purple',
@@ -43,6 +49,7 @@ const COLOR_CLASSES = {
   emerald: 'bg-emerald-50 border-emerald-200 text-emerald-700',
   amber: 'bg-amber-50 border-amber-200 text-amber-700',
   rose: 'bg-rose-50 border-rose-200 text-rose-700',
+  teal: 'bg-teal-50 border-teal-200 text-teal-700',
   purple: 'bg-purple-50 border-purple-200 text-purple-700',
 };
 
@@ -88,13 +95,14 @@ export default function SummaryView({ interviewee, knowledgeBase, connections, d
 
   const handleExport = () => {
     const lines = [];
-    lines.push('LEGACY WHISPERER — KNOWLEDGE BRIEF');
+    lines.push('LEGACY WHISPERER — CODEBASE KNOWLEDGE BRIEF');
     lines.push('='.repeat(50));
     if (interviewee) {
-      lines.push(`Interviewee: ${interviewee.name}`);
+      lines.push(`Engineer: ${interviewee.name}`);
       lines.push(`Role: ${interviewee.title}`);
-      lines.push(`Property: ${interviewee.property}`);
-      if (interviewee.years) lines.push(`Years in Role: ${interviewee.years}`);
+      lines.push(`System / Codebase: ${interviewee.system}`);
+      if (interviewee.years) lines.push(`Years on System: ${interviewee.years}`);
+      if (interviewee.team) lines.push(`Team: ${interviewee.team}`);
       lines.push(`Interview Date: ${new Date().toLocaleDateString()}`);
     }
     lines.push('');
@@ -137,8 +145,8 @@ export default function SummaryView({ interviewee, knowledgeBase, connections, d
           <h2 className="text-lg font-semibold text-slate-900">Knowledge Brief</h2>
           {interviewee && (
             <p className="text-sm text-slate-500 mt-0.5">
-              {interviewee.name} · {interviewee.title} · {interviewee.property}
-              {interviewee.years ? ` · ${interviewee.years} years` : ''}
+              {interviewee.name} · {interviewee.title} · {interviewee.system}
+              {interviewee.years ? ` · ${interviewee.years} yrs` : ''}
             </p>
           )}
         </div>

@@ -1,18 +1,15 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { PHASES, ACKNOWLEDGMENTS, PHASE_TRANSITIONS, KNOWLEDGE_TAG_LABELS } from '../data/questions.js';
 
 function extractPotentialPeople(text) {
   const found = new Set();
 
-  // Two+ consecutive Title Case words: "John Smith", "Tanaka Kenji"
   const pairs = text.match(/\b[A-Z][a-z]{1,20}(?:\s[A-Z][a-z]{1,20})+\b/g) || [];
   pairs.forEach(n => found.add(n));
 
-  // Japanese honorifics: "Yamamoto-san", "Kenji-kun"
   const japanese = [...text.matchAll(/\b([A-Za-z]{2,15})(?:-san|-kun|-chan|-sama)\b/gi)];
   japanese.forEach(m => found.add(m[1]));
 
-  // Single title-case words after "Mr.", "Ms.", "Dr."
   const titled = [...text.matchAll(/\b(?:Mr\.|Ms\.|Mrs\.|Dr\.)\s([A-Z][a-z]+(?:\s[A-Z][a-z]+)?)\b/g)];
   titled.forEach(m => found.add(m[1]));
 
@@ -45,7 +42,7 @@ function makeMsg(role, content, phaseId, questionTag) {
 }
 
 export function useInterview() {
-  const [phase, setPhase] = useState('setup'); // setup | interview | complete
+  const [phase, setPhase] = useState('setup');
   const [interviewee, setInterviewee] = useState(null);
   const [messages, setMessages] = useState([]);
   const [phaseIdx, setPhaseIdx] = useState(0);
@@ -57,6 +54,16 @@ export function useInterview() {
   const [documents, setDocuments] = useState([]);
   const [knowledgeBase, setKnowledgeBase] = useState({});
   const [activeView, setActiveView] = useState('interview');
+
+  // Refs to always read the latest values inside async sendMessage,
+  // avoiding stale closure bugs after React re-renders mid-await.
+  const phaseIdxRef = useRef(0);
+  const questionIdxRef = useRef(0);
+  const followUpAskedRef = useRef(false);
+
+  useEffect(() => { phaseIdxRef.current = phaseIdx; }, [phaseIdx]);
+  useEffect(() => { questionIdxRef.current = questionIdx; }, [questionIdx]);
+  useEffect(() => { followUpAskedRef.current = followUpAsked; }, [followUpAsked]);
 
   const currentPhase = PHASES[phaseIdx] || PHASES[PHASES.length - 1];
   const currentQuestion = currentPhase?.questions[questionIdx] || null;
@@ -130,58 +137,58 @@ export function useInterview() {
   const sendMessage = useCallback(async (userText) => {
     if (!userText.trim() || isTyping || phase !== 'interview') return;
 
-    const userMsg = makeMsg('user', userText, currentPhase?.id, currentQuestion?.knowledgeTag);
+    // Read from refs — always the latest values regardless of when this callback was created
+    const curPhaseIdx = phaseIdxRef.current;
+    const curQIdx = questionIdxRef.current;
+    const curPhase = PHASES[curPhaseIdx] || PHASES[PHASES.length - 1];
+    const curQuestion = curPhase?.questions[curQIdx] || null;
+
+    const userMsg = makeMsg('user', userText, curPhase?.id, curQuestion?.knowledgeTag);
     setMessages(prev => [...prev, userMsg]);
 
-    // Extract people from response
     const detectedPeople = extractPotentialPeople(userText);
     if (detectedPeople.length > 0) {
       setSuggestedPeople(prev => {
-        const existing = new Set([...prev, ...connections.map(c => c.name.toLowerCase())]);
+        const existing = new Set(prev.map(p => p.toLowerCase()));
         const newPeople = detectedPeople.filter(p => !existing.has(p.toLowerCase()));
         return [...new Set([...prev, ...newPeople])];
       });
     }
 
-    // Store in knowledge base
-    if (currentQuestion?.knowledgeTag) {
-      addToKnowledge(currentQuestion.knowledgeTag, userText);
+    if (curQuestion?.knowledgeTag) {
+      addToKnowledge(curQuestion.knowledgeTag, userText);
     }
 
     setIsTyping(true);
     await delay(1000 + Math.random() * 1000);
 
-    // Check for follow-up trigger
     const lowerText = userText.toLowerCase();
-    const potentialFollowUp = !followUpAsked && currentQuestion?.followUps?.find(f =>
+    const potentialFollowUp = !followUpAskedRef.current && curQuestion?.followUps?.find(f =>
       f.triggers.some(t => lowerText.includes(t))
     );
 
     if (potentialFollowUp) {
       setFollowUpAsked(true);
       setIsTyping(false);
-      setMessages(prev => [...prev, makeMsg('ai', potentialFollowUp.text, currentPhase?.id, currentQuestion?.knowledgeTag)]);
+      setMessages(prev => [...prev, makeMsg('ai', potentialFollowUp.text, curPhase?.id, curQuestion?.knowledgeTag)]);
       return;
     }
 
-    // Advance to next question
     const ack = getRandomAck();
-    const nextQIdx = questionIdx + 1;
-    const currentPhaseQuestions = currentPhase.questions;
+    const nextQIdx = curQIdx + 1;
+    const phaseQuestions = curPhase.questions;
 
     setFollowUpAsked(false);
 
-    if (nextQIdx < currentPhaseQuestions.length) {
-      // Next question in same phase
-      const nextQ = currentPhaseQuestions[nextQIdx];
+    if (nextQIdx < phaseQuestions.length) {
+      const nextQ = phaseQuestions[nextQIdx];
       setQuestionIdx(nextQIdx);
       setIsTyping(false);
       setMessages(prev => [...prev,
-        makeMsg('ai', `${ack}\n\n${nextQ.text}`, currentPhase.id, nextQ.knowledgeTag)
+        makeMsg('ai', `${ack}\n\n${nextQ.text}`, curPhase.id, nextQ.knowledgeTag)
       ]);
     } else {
-      // Move to next phase
-      const nextPhaseIdx = phaseIdx + 1;
+      const nextPhaseIdx = curPhaseIdx + 1;
 
       if (nextPhaseIdx < PHASES.length) {
         const nextPhase = PHASES[nextPhaseIdx];
@@ -195,19 +202,33 @@ export function useInterview() {
           makeMsg('ai', `${ack}\n\n${transition ? `— ${transition} —\n\n` : ''}${nextQ.text}`, nextPhase.id, nextQ.knowledgeTag)
         ]);
       } else {
-        // Interview complete
         setPhaseIdx(PHASES.length - 1);
         setIsTyping(false);
         setPhase('complete');
         setMessages(prev => [...prev,
           makeMsg('ai',
-            `${ack}\n\nThat's everything. Thank you — truly.\n\nThe knowledge you've shared today has been organized into a confidential briefing for your team and your successor. Nothing you've said will be lost.\n\nYou can review the full Knowledge Summary in the tab above, and share individual sections or connections with specific colleagues.\n\n您的贡献将长久留存。Thank you for your service.`,
+            `${ack}\n\nThat's everything. Thank you — truly.\n\nThe knowledge you've shared today has been organized into a confidential briefing for your team and your successor. The context, the decisions, the hidden knowledge — none of it will be lost.\n\nYou can review the full Knowledge Brief in the tab above, export it as a document, and share individual sections with specific colleagues.\n\nあなたの知識は、次の世代のエンジニアに受け継がれます。Thank you for your time.`,
             'complete', null)
         ]);
         setActiveView('summary');
       }
     }
-  }, [isTyping, phase, currentPhase, currentQuestion, questionIdx, phaseIdx, followUpAsked, addToKnowledge, connections]);
+  }, [isTyping, phase, addToKnowledge]);
+
+  const resetInterview = useCallback(() => {
+    setPhase('setup');
+    setInterviewee(null);
+    setMessages([]);
+    setPhaseIdx(0);
+    setQuestionIdx(0);
+    setFollowUpAsked(false);
+    setIsTyping(false);
+    setConnections([]);
+    setSuggestedPeople([]);
+    setDocuments([]);
+    setKnowledgeBase({});
+    setActiveView('interview');
+  }, []);
 
   const generateSummary = useCallback(() => {
     const sections = [];
@@ -238,6 +259,7 @@ export function useInterview() {
     currentPhase,
     currentQuestion,
     startInterview,
+    resetInterview,
     sendMessage,
     acceptSuggestedPerson,
     dismissSuggestedPerson,

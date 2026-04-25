@@ -23,7 +23,9 @@ export default function App() {
     knowledgeBase,
     activeView,
     currentPhase,
+    currentQuestion,
     startInterview,
+    resetInterview,
     sendMessage,
     acceptSuggestedPerson,
     dismissSuggestedPerson,
@@ -57,6 +59,7 @@ export default function App() {
         activeView={activeView}
         setActiveView={setActiveView}
         connectionCount={connections.length}
+        onReset={resetInterview}
       />
 
       <div className="flex flex-1 min-h-0">
