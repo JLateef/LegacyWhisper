@@ -22,98 +22,111 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from generate_questions import generate_questions
-
 SAMPLE_DIR = Path(__file__).parent / "sample_codebase"
 
 # ── Signal manifest ────────────────────────────────────────────────────────────
-# The 12 pieces of weirdness deliberately planted in sample_codebase/.
+# The 14 pieces of weirdness deliberately planted in sample_codebase/.
 # A signal is "caught" if any of its keywords appear in a generated question
 # (question_text + reasoning + code_reference, case-insensitive).
+# Full institutional knowledge for each signal is in ANSWER_KEY.md.
 
 SIGNAL_MANIFEST = [
     {
-        "id": "stripe_retry_delay",
-        "description": "STRIPE_RETRY_DELAY = 7 — hardcoded value with 'DO NOT TOUCH' comment referencing March 2023 cascade",
-        "keywords": ["stripe_retry_delay", "retry_delay", "7 second", "7-second", "do not touch", "cascade"],
-        "source": "payment_processor.py:13",
+        "id": "chunk_size_847",
+        "description": "SYNC_CHUNK_SIZE = 847 — specific value arrived at empirically against undocumented warehouse API limit",
+        "keywords": ["sync_chunk_size", "chunk_size", "chunk size", "847", "chunk of 847"],
+        "source": "config.py:1",
         "priority": "high",
     },
     {
-        "id": "batch_size_47",
-        "description": "BATCH_SIZE = 47 — not arbitrary; chosen after August 2023 post-mortem to stay under undocumented rate limit",
-        "keywords": ["batch_size", "batch size", "47", "batch of 47", "post-mortem", "postmortem"],
-        "source": "data_pipeline.py:12",
+        "id": "legacy_sku_branch",
+        "description": "LEGACY_ SKU prefix routes to _apply_legacy_corrections — encoding fix for migrated products",
+        "keywords": ["legacy_", "legacy_sku", "legacy sku", "startswith", "apply_legacy", "encoding"],
+        "source": "transformers.py:12",
         "priority": "high",
     },
     {
-        "id": "sleep_2_1",
-        "description": "time.sleep(2.1) — 2.1 not 2.0; the extra 100ms has a specific reason from the post-mortem",
-        "keywords": ["2.1", "2.1s", "two point one", "sleep(2", "100ms", "100 ms"],
-        "source": "data_pipeline.py:32",
+        "id": "normalize_price_on_description",
+        "description": "normalize_price() called on description field — function secretly strips HTML entities, used for side effect",
+        "keywords": ["normalize_price", "description", "# fix", "html", "entity", "price.*description"],
+        "source": "transformers.py:19",
         "priority": "high",
     },
     {
-        "id": "exception_swallow",
-        "description": "except Exception: pass — silently swallows errors in the payment critical path",
-        "keywords": ["except exception", "except:", "swallow", "silent fail", "bare except", "garbage"],
-        "source": "payment_processor.py:40",
+        "id": "storefront_conflict_swallow",
+        "description": "StorefrontConflictError silently caught and swallowed — 409s from storefront are silently ignored",
+        "keywords": ["storefrontconflicterror", "conflict", "409", "silent", "swallow", "pass"],
+        "source": "connectors/storefront.py:22",
         "priority": "high",
     },
     {
-        "id": "fix_commit",
-        "description": "Commit a3f9bc2 — message is just 'fix', touches 23 lines of payment code",
-        "keywords": ["a3f9bc2", "\"fix\"", "'fix'", "message: fix", "message is fix", "one-word commit"],
-        "source": "commit:a3f9bc2",
+        "id": "warehouse_v1_v2",
+        "description": "send_to_warehouse and send_to_warehouse_v2 — near-identical functions with different auth and payload schemas",
+        "keywords": ["send_to_warehouse_v2", "warehouse_v2", "v2", "v1.*v2", "two.*warehouse", "both"],
+        "source": "connectors/warehouse.py:35",
         "priority": "high",
     },
     {
-        "id": "bank_thing_commit",
-        "description": "Commit e7b0fa6 — message 'fix the bank thing'; vague, touches payment + pipeline, mentions Tuesdays",
-        "keywords": ["e7b0fa6", "bank thing", "fix the bank", "tuesday", "tuesdays"],
-        "source": "commit:e7b0fa6",
+        "id": "delta_sync_disabled",
+        "description": "ENABLE_DELTA_SYNC = False — full implementation exists but feature is disabled",
+        "keywords": ["enable_delta_sync", "delta_sync", "delta sync", "disabled", "false"],
+        "source": "config.py:2",
         "priority": "high",
     },
     {
-        "id": "legacy_merchant_cutoff",
-        "description": "LEGACY_MERCHANT_CUTOFF = 1609459200 — frozen epoch timestamp; migration cancelled due to KYC concerns",
-        "keywords": ["legacy_merchant_cutoff", "1609459200", "epoch", "cutoff", "braintree", "kyc", "migration"],
-        "source": "payment_processor.py:17",
-        "priority": "high",
-    },
-    {
-        "id": "square_revert",
-        "description": "Square fallback removed (commit 9d2e3f4) then re-added the next day (commit f8c1ab7) after a Stripe outage",
-        "keywords": ["9d2e3f4", "f8c1ab7", "revert", "square", "fallback", "removed then"],
-        "source": "commit:f8c1ab7",
+        "id": "old_code_style",
+        "description": "_handle_standard_format uses Python 2-era style (type(), % formatting) vs modern rest of file",
+        "keywords": ["_handle_standard_format", "_handle_legacy_format", "old style", "type(v)", "%.4f", "formatting"],
+        "source": "transformers.py:53",
         "priority": "medium",
     },
     {
-        "id": "pay_234_reopened",
-        "description": "PAY-234 reopened 3 times — weekend payment failures; root cause was an undocumented Stripe rate limit",
-        "keywords": ["pay-234", "pay 234", "weekend", "saturday", "sunday", "reopened 3"],
-        "source": "ticket:PAY-234",
-        "priority": "high",
-    },
-    {
-        "id": "set_112_deadline",
-        "description": "SET-112 reopened 2 times — settlement missed the 6 AM clearing deadline; 30-minute margin remaining",
-        "keywords": ["set-112", "set 112", "settlement", "deadline", "clearing", "6 am", "6am"],
-        "source": "ticket:SET-112",
-        "priority": "high",
-    },
-    {
-        "id": "sha256_tokens",
-        "description": "Session tokens use sha256 (wrong) instead of bcrypt; can't migrate without breaking mobile clients",
-        "keywords": ["sha256", "sha-256", "mobile", "session token", "bcrypt", "next sprint", "8 months"],
-        "source": "user_auth.py:28",
+        "id": "force_full_dead_param",
+        "description": "force_full parameter only matters when ENABLE_DELTA_SYNC=True, which it isn't",
+        "keywords": ["force_full", "force full", "delta.*force", "parameter.*no effect"],
+        "source": "sync_engine.py:28",
         "priority": "medium",
     },
     {
-        "id": "legal_vault",
-        "description": "store_in_vault_on_success: False — a legal requirement from an audit, buried in a comment",
-        "keywords": ["store_in_vault", "vault", "legal requirement", "audit", "do not store"],
-        "source": "payment_processor.py:57",
+        "id": "warehouse_none_check",
+        "description": "if warehouse_response is None — defensive check for a condition the current library no longer produces",
+        "keywords": ["warehouse_response is none", "warehouse_response", "response is none", "none check"],
+        "source": "sync_engine.py:43",
+        "priority": "medium",
+    },
+    {
+        "id": "initialize_ordering",
+        "description": "initialize() must be called before sync_products() — implicit dependency, no enforcement",
+        "keywords": ["initialize", "_state", "order", "before.*sync", "cursor.*none", "dependency"],
+        "source": "sync_engine.py:14",
+        "priority": "high",
+    },
+    {
+        "id": "handle_legacy_format_dead",
+        "description": "_handle_legacy_format has no direct callers — called via globals() from dispatch_handler string lookup",
+        "keywords": ["_handle_legacy_format", "handle_legacy", "no.*caller", "dead code", "globals", "dispatch"],
+        "source": "transformers.py:68",
+        "priority": "high",
+    },
+    {
+        "id": "sleep_per_record",
+        "description": "time.sleep(0.3) per record inside storefront push loop — rate limit workaround, scales with catalog size",
+        "keywords": ["sleep(0.3)", "0.3", "per record", "per-record", "increase sleep", "rate limit.*sleep"],
+        "source": "sync_engine.py:52",
+        "priority": "high",
+    },
+    {
+        "id": "merchant_override_ids",
+        "description": "MERCHANT_OVERRIDE_IDS = [1042, 7731] — two merchants hardcoded to force v1 warehouse connector",
+        "keywords": ["merchant_override_ids", "1042", "7731", "override.*merchant", "merchant.*override"],
+        "source": "config.py:5",
+        "priority": "high",
+    },
+    {
+        "id": "no_rollback",
+        "description": "Warehouse updated before storefront; storefront failures leave warehouse ahead with no rollback",
+        "keywords": ["rollback", "no rollback", "warehouse.*storefront", "partial failure", "discrepancy", "compensat"],
+        "source": "sync_engine.py:43-54",
         "priority": "medium",
     },
 ]
@@ -345,7 +358,7 @@ def build_html_report(questions, signals, coverage_results, elapsed, model):
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 def run_test(verbose=False, model="claude-opus-4-7", open_browser=True):
-    for p in [SAMPLE_DIR, SAMPLE_DIR / "commit_log.txt", SAMPLE_DIR / "tickets.csv"]:
+    for p in [SAMPLE_DIR, SAMPLE_DIR / "commit_history.txt", SAMPLE_DIR / "tickets.csv"]:
         if not p.exists():
             print(f"Error: missing {p}", file=sys.stderr)
             sys.exit(1)
@@ -357,7 +370,7 @@ def run_test(verbose=False, model="claude-opus-4-7", open_browser=True):
     start = time.time()
     questions, signals = generate_questions(
         codebase_path=str(SAMPLE_DIR),
-        commit_log_path=str(SAMPLE_DIR / "commit_log.txt"),
+        commit_log_path=str(SAMPLE_DIR / "commit_history.txt"),
         tickets_path=str(SAMPLE_DIR / "tickets.csv"),
         model=model,
         max_questions=25,

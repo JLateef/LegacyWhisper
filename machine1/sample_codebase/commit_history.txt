@@ -1,0 +1,511 @@
+commit f3a1b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f901
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Jan 22 10:14:33 2024 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Jan 22 10:14:33 2024 -0500
+
+    fix
+
+ sync_engine.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit e2b1c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a902
+Author:     Yuki Tanaka <y.tanaka@meridian.io>
+AuthorDate: Tue Jan 16 14:52:09 2024 -0500
+Commit:     Yuki Tanaka <y.tanaka@meridian.io>
+CommitDate: Tue Jan 16 14:52:09 2024 -0500
+
+    cleanup
+
+ transformers.py | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+commit d1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f903
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Wed Jan 10 09:31:44 2024 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Wed Jan 10 09:31:44 2024 -0500
+
+    update scheduler
+
+ scheduler.py | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+commit c0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e904
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Thu Jan 04 16:20:11 2024 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Thu Jan 04 16:20:11 2024 -0500
+
+    update chunk size
+
+ config.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit b9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d905
+Author:     Yuki Tanaka <y.tanaka@meridian.io>
+AuthorDate: Wed Dec 20 11:08:55 2023 -0500
+Commit:     Yuki Tanaka <y.tanaka@meridian.io>
+CommitDate: Wed Dec 20 11:08:55 2023 -0500
+
+    address review
+
+ connectors/storefront.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit a8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c906
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Dec 11 15:44:02 2023 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Dec 11 15:44:02 2023 -0500
+
+    fix
+
+ sync_engine.py | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+commit 97c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b907
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Dec 04 09:17:38 2023 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Dec 04 09:17:38 2023 -0500
+
+    increase sleep
+
+ sync_engine.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 86b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a908
+Author:     Aisha Okonkwo <a.okonkwo@meridian.io>
+AuthorDate: Tue Nov 28 14:09:21 2023 -0500
+Commit:     Aisha Okonkwo <a.okonkwo@meridian.io>
+CommitDate: Tue Nov 28 14:09:21 2023 -0500
+
+    update transformers
+
+ transformers.py | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+commit 75a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f909
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Nov 20 10:55:14 2023 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Nov 20 10:55:14 2023 -0500
+
+    cleanup
+
+ sync_engine.py          | 9 +++------
+ connectors/warehouse.py | 5 +++--
+ 2 files changed, 6 insertions(+), 8 deletions(-)
+
+commit 6495a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e910
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Nov 13 16:33:07 2023 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Nov 13 16:33:07 2023 -0500
+
+    wip
+
+ sync_engine.py | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+commit 5384b5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d911
+Author:     Yuki Tanaka <y.tanaka@meridian.io>
+AuthorDate: Tue Oct 31 09:44:55 2023 -0400
+Commit:     Yuki Tanaka <y.tanaka@meridian.io>
+CommitDate: Tue Oct 31 09:44:55 2023 -0400
+
+    fix
+
+ connectors/warehouse.py | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+commit 4273c4b5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c912
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Tue Oct 24 13:28:41 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Tue Oct 24 13:28:41 2023 -0400
+
+    add merchant overrides
+
+ config.py      |  3 ++-
+ sync_engine.py | 11 +++++++++++
+ 2 files changed, 13 insertions(+)
+
+commit 3162d3c4b5a6b7c8d9e0f1a2b3c4d5e6f7a8b913
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Oct 16 10:02:19 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Oct 16 10:02:19 2023 -0400
+
+    update config
+
+ config.py | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+commit 2051e2d3c4b5a6b7c8d9e0f1a2b3c4d5e6f7a914
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Fri Oct 06 15:17:33 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Fri Oct 06 15:17:33 2023 -0400
+
+    fix
+
+ sync_engine.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+commit 1940f1e2d3c4b5a6b7c8d9e0f1a2b3c4d5e6f915
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Sep 25 09:50:08 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Sep 25 09:50:08 2023 -0400
+
+    refactor
+
+ sync_engine.py | 44 +++++++++++++++++++++-----------------------
+ scheduler.py   | 27 +++++++++++++--------------
+ config.py      |  8 ++++----
+ 3 files changed, 39 insertions(+), 40 deletions(-)
+
+commit 0839a0f1e2d3c4b5a6b7c8d9e0f1a2b3c4d5e916
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Sep 11 14:22:55 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Sep 11 14:22:55 2023 -0400
+
+    actually fix the thing
+
+ connectors/storefront.py | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+commit f728b9a0f1e2d3c4b5a6b7c8d9e0f1a2b3c4d917
+Author:     Yuki Tanaka <y.tanaka@meridian.io>
+AuthorDate: Mon Aug 28 10:41:17 2023 -0400
+Commit:     Yuki Tanaka <y.tanaka@meridian.io>
+CommitDate: Mon Aug 28 10:41:17 2023 -0400
+
+    address review
+
+ connectors/storefront.py | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+commit e617c8b9a0f1e2d3c4b5a6b7c8d9e0f1a2b3c918
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Tue Aug 15 16:05:44 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Tue Aug 15 16:05:44 2023 -0400
+
+    fix storefront connector
+
+ connectors/storefront.py | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
+
+commit d506d7c8b9a0f1e2d3c4b5a6b7c8d9e0f1a2b919
+Author:     Aisha Okonkwo <a.okonkwo@meridian.io>
+AuthorDate: Thu Aug 03 09:12:01 2023 -0400
+Commit:     Aisha Okonkwo <a.okonkwo@meridian.io>
+CommitDate: Thu Aug 03 09:12:01 2023 -0400
+
+    revert the revert
+
+ connectors/storefront.py | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+commit c495e6d7c8b9a0f1e2d3c4b5a6b7c8d9e0f1a920
+Author:     Aisha Okonkwo <a.okonkwo@meridian.io>
+AuthorDate: Wed Aug 02 17:58:33 2023 -0400
+Commit:     Aisha Okonkwo <a.okonkwo@meridian.io>
+CommitDate: Wed Aug 02 17:58:33 2023 -0400
+
+    revert
+
+ connectors/storefront.py | 31 -------------------------------
+ 1 file changed, 31 deletions(-)
+
+commit b384f5e6d7c8b9a0f1e2d3c4b5a6b7c8d9e0f921
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Thu Jul 20 11:39:28 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Thu Jul 20 11:39:28 2023 -0400
+
+    hotfix
+
+ connectors/storefront.py | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+commit a273a4f5e6d7c8b9a0f1e2d3c4b5a6b7c8d9e922
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Jul 10 09:55:02 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Jul 10 09:55:02 2023 -0400
+
+    fix
+
+ sync_engine.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit 9162b3a4f5e6d7c8b9a0f1e2d3c4b5a6b7c8d923
+Author:     Yuki Tanaka <y.tanaka@meridian.io>
+AuthorDate: Thu Jun 22 14:17:44 2023 -0400
+Commit:     Yuki Tanaka <y.tanaka@meridian.io>
+CommitDate: Thu Jun 22 14:17:44 2023 -0400
+
+    add warehouse v2
+
+ connectors/warehouse.py | 41 +++++++++++++++++++++++++++++++++++++++++
+ sync_engine.py          | 14 ++++++++++++++
+ 2 files changed, 55 insertions(+)
+
+commit 8051c2b3a4f5e6d7c8b9a0f1e2d3c4b5a6b7c924
+Author:     Yuki Tanaka <y.tanaka@meridian.io>
+AuthorDate: Thu Jun 08 10:33:19 2023 -0400
+Commit:     Yuki Tanaka <y.tanaka@meridian.io>
+CommitDate: Thu Jun 08 10:33:19 2023 -0400
+
+    update warehouse connector
+
+ connectors/warehouse.py | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+commit 6f40d1c2b3a4f5e6d7c8b9a0f1e2d3c4b5a6b925
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Sun May 28 20:14:07 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Sun May 28 20:14:07 2023 -0400
+
+    fix
+
+ sync_engine.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit 5e39e0d1c2b3a4f5e6d7c8b9a0f1e2d3c4b5a926
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Wed May 10 11:02:55 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Wed May 10 11:02:55 2023 -0400
+
+    disable delta sync
+
+ config.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 4d28f9e0d1c2b3a4f5e6d7c8b9a0f1e2d3c4b927
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Thu Apr 20 14:48:31 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Thu Apr 20 14:48:31 2023 -0400
+
+    fix
+
+ sync_engine.py | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+commit 3c17a8f9e0d1c2b3a4f5e6d7c8b9a0f1e2d3c928
+Author:     Ben Torres <b.torres@meridian.io>
+AuthorDate: Mon Apr 10 10:15:22 2023 -0400
+Commit:     Ben Torres <b.torres@meridian.io>
+CommitDate: Mon Apr 10 10:15:22 2023 -0400
+
+    address review
+
+ sync_engine.py | 7 ++++---
+ config.py      | 4 ++--
+ 2 files changed, 6 insertions(+), 5 deletions(-)
+
+commit 2b06b7a8f9e0d1c2b3a4f5e6d7c8b9a0f1e2d929
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Tue Mar 28 09:22:18 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Tue Mar 28 09:22:18 2023 -0400
+
+    fix delta sync
+
+ sync_engine.py | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+commit 1a05c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0f1e930
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Tue Mar 14 16:07:44 2023 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Tue Mar 14 16:07:44 2023 -0400
+
+    wip delta sync
+
+ sync_engine.py | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+commit 09f4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a0f931
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Wed Mar 01 11:44:05 2023 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Wed Mar 01 11:44:05 2023 -0500
+
+    update delta sync
+
+ sync_engine.py | 18 +++++++++---------
+ config.py      |  3 ++-
+ 2 files changed, 11 insertions(+), 10 deletions(-)
+
+commit f8e3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b9a932
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Tue Feb 14 14:33:29 2023 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Tue Feb 14 14:33:29 2023 -0500
+
+    add delta sync
+
+ sync_engine.py | 31 +++++++++++++++++++++++++++++++
+ config.py      |  3 ++-
+ 2 files changed, 33 insertions(+), 1 deletion(-)
+
+commit e7d2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c8b933
+Author:     Yuki Tanaka <y.tanaka@meridian.io>
+AuthorDate: Fri Jan 20 10:04:11 2023 -0500
+Commit:     Yuki Tanaka <y.tanaka@meridian.io>
+CommitDate: Fri Jan 20 10:04:11 2023 -0500
+
+    fix transformers
+
+ transformers.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit d6c1a2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d7c934
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Tue Jan 10 15:19:33 2023 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Tue Jan 10 15:19:33 2023 -0500
+
+    cleanup
+
+ sync_engine.py          | 12 ++++++------
+ connectors/warehouse.py |  6 +++---
+ connectors/storefront.py |  4 ++--
+ 3 files changed, 11 insertions(+), 11 deletions(-)
+
+commit c5b0b1a2f3e4d5c6b7a8f9e0d1c2b3a4f5e6d935
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Dec 12 09:47:02 2022 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Dec 12 09:47:02 2022 -0500
+
+    fix
+
+ sync_engine.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+commit b4a9c0b1a2f3e4d5c6b7a8f9e0d1c2b3a4f5e936
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Nov 28 16:08:44 2022 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Nov 28 16:08:44 2022 -0500
+
+    wip
+
+ transformers.py | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
+
+commit a398d9c0b1a2f3e4d5c6b7a8f9e0d1c2b3a4f937
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Thu Oct 20 10:30:17 2022 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Thu Oct 20 10:30:17 2022 -0400
+
+    add legacy product handling
+
+ transformers.py | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+
+commit 9287e8d9c0b1a2f3e4d5c6b7a8f9e0d1c2b3a938
+Author:     Yuki Tanaka <y.tanaka@meridian.io>
+AuthorDate: Sat Sep 10 11:14:55 2022 -0400
+Commit:     Yuki Tanaka <y.tanaka@meridian.io>
+CommitDate: Sat Sep 10 11:14:55 2022 -0400
+
+    fix
+
+ transformers.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit 8176f7e8d9c0b1a2f3e4d5c6b7a8f9e0d1c2b939
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Aug 15 22:11:03 2022 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Aug 15 22:11:03 2022 -0400
+
+    fix
+
+ config.py      | 2 +-
+ sync_engine.py | 9 ++++++---
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+commit 7065a6f7e8d9c0b1a2f3e4d5c6b7a8f9e0d1c940
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Wed Jul 20 14:28:34 2022 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Wed Jul 20 14:28:34 2022 -0400
+
+    update chunk size
+
+ config.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 6f54b5a6f7e8d9c0b1a2f3e4d5c6b7a8f9e0d941
+Author:     Yuki Tanaka <y.tanaka@meridian.io>
+AuthorDate: Fri Jun 10 10:04:22 2022 -0400
+Commit:     Yuki Tanaka <y.tanaka@meridian.io>
+CommitDate: Fri Jun 10 10:04:22 2022 -0400
+
+    address review
+
+ sync_engine.py           | 14 +++++++-------
+ connectors/storefront.py |  8 ++++----
+ connectors/warehouse.py  |  6 +++---
+ 3 files changed, 14 insertions(+), 14 deletions(-)
+
+commit 5e43c4b5a6f7e8d9c0b1a2f3e4d5c6b7a8f9e942
+Author:     Aisha Okonkwo <a.okonkwo@meridian.io>
+AuthorDate: Fri May 20 15:33:07 2022 -0400
+Commit:     Aisha Okonkwo <a.okonkwo@meridian.io>
+CommitDate: Fri May 20 15:33:07 2022 -0400
+
+    add scheduler
+
+ scheduler.py | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+commit 4d32d3c4b5a6f7e8d9c0b1a2f3e4d5c6b7a8f943
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Fri Apr 15 16:02:11 2022 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Fri Apr 15 16:02:11 2022 -0400
+
+    fix
+
+ sync_engine.py           | 18 +++++++++---------
+ connectors/storefront.py |  7 ++++---
+ 2 files changed, 13 insertions(+), 12 deletions(-)
+
+commit 3c21e2d3c4b5a6f7e8d9c0b1a2f3e4d5c6b7a944
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Mon Mar 28 11:20:44 2022 -0400
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Mon Mar 28 11:20:44 2022 -0400
+
+    add connectors
+
+ connectors/warehouse.py  | 62 ++++++++++++++++++++++++++++++++++++++++++++++
+ connectors/storefront.py | 44 ++++++++++++++++++++++++++++++++
+ 2 files changed, 106 insertions(+)
+
+commit 2b10f1e2d3c4b5a6f7e8d9c0b1a2f3e4d5c6b945
+Author:     Dmitri Volkov <d.volkov@meridian.io>
+AuthorDate: Tue Mar 01 09:00:00 2022 -0500
+Commit:     Dmitri Volkov <d.volkov@meridian.io>
+CommitDate: Tue Mar 01 09:00:00 2022 -0500
+
+    initial commit
+
+ config.py       | 12 ++++++++++++
+ sync_engine.py  | 58 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ transformers.py | 44 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 114 insertions(+)

@@ -1,0 +1,13 @@
+SYNC_CHUNK_SIZE = 847
+ENABLE_DELTA_SYNC = False
+WAREHOUSE_TIMEOUT = 30
+STOREFRONT_TIMEOUT = 15
+MERCHANT_OVERRIDE_IDS = [1042, 7731]
+LOG_LEVEL = "INFO"
+RETRY_ATTEMPTS = 3
+MAX_RETRY_DELAY = 60
+WAREHOUSE_REGION = "east"
+DISPATCH_HANDLERS = {
+    "legacy": "_handle_legacy_format",
+    "standard": "_handle_standard_format",
+}
