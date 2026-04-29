@@ -1,0 +1,33 @@
+Generate one interview question for each of the following signals identified in the codebase. Then apply the quality filters at the end.
+
+## SIGNALS
+{signals_json}
+
+## SUPPORTING CONTEXT (excerpts around each signal's location)
+{context_excerpts}
+
+---
+
+For each signal, generate exactly one question. Then apply these filters before returning:
+1. Remove any question that asks WHAT instead of WHY
+2. Remove any question whose answer can be found in the code, a comment, or a docstring
+3. Remove near-duplicates — keep the more specific one
+4. Ensure the final list is no longer than 25 questions
+
+Return a JSON array where each object has exactly these fields:
+
+  "question_text": the actual question to ask — be specific, quote real artifacts verbatim (commit messages, comments, values), ask why
+  "code_reference": human-readable primary locator, e.g. "payment_processor.py:47" or "commit:abc123f" or "PROJ-123"
+  "reference_type": one of: file | function | commit | ticket | cross_cutting
+  "reasoning": one sentence — what risk or knowledge gap this question probes and why the answer matters
+  "priority": one of: high | medium | low
+  "anchor_metadata": a nested object with these fields:
+    "type": one of: file | commit | ticket | function
+    "id": the hash (7 chars), file path, ticket ID, or fully-qualified function name
+    "file": the file path if applicable, otherwise null
+    "line_start": the line number if applicable, otherwise null
+    "line_end": the ending line number if the signal spans a range, otherwise null
+
+Sort final output: high priority first, then medium, then low. Within each priority, keep the order that feels most natural for a conversation — related topics grouped together.
+
+Return only the JSON array. No explanation, no preamble, no markdown code fences.

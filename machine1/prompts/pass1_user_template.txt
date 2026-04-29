@@ -1,0 +1,22 @@
+Analyze the following codebase artifacts and identify the most important signals worth asking the departing engineer about.
+{commit_section}
+{ticket_section}
+{codebase_section}
+---
+
+Return a JSON array of signal objects. Each object must have exactly these fields:
+
+  "signal_type": one of: cryptic_commit | high_churn | hardcoded_value | workaround_comment | error_swallowing | retry_magic | reopened_ticket | resolution_mismatch | dead_code | cross_cutting
+  "coordinates": the specific locator — use one of these formats exactly:
+    commit:<7-char-hash>
+    file:<relative/path.py>:<line_number>
+    ticket:<TICKET-ID>
+    function:<module_path>.<function_name>
+  "headline": 10 words max describing what is interesting, e.g. "7-second hardcoded retry delay in payment processor"
+  "raw_evidence": the actual text or code that caught your attention — quote it verbatim from the input, do not paraphrase
+  "context": 1–2 sentences on what question this raises and why the answer matters
+  "interest_score": integer 1–10 where 10 means "this could be a hidden production landmine"
+
+Sort by interest_score descending. Aim for 20–35 signals. Focus on signals where the WHY cannot be recovered from reading the code. Do not flag things that are clearly explained by comments, docstrings, or surrounding documentation.
+
+Return only the JSON array. No explanation, no preamble, no markdown code fences.
