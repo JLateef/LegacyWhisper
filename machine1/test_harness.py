@@ -22,6 +22,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
+from generate_questions import generate_questions
+
 SAMPLE_DIR = Path(__file__).parent / "sample_codebase"
 
 # ── Signal manifest ────────────────────────────────────────────────────────────

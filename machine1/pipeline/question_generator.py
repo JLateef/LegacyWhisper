@@ -18,7 +18,7 @@ from pipeline.signal_extractor import Signal
 
 PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
 
-MAX_TOKENS_RESPONSE = 6144
+MAX_TOKENS_RESPONSE = 32000
 VALID_REFERENCE_TYPES = {"file", "function", "commit", "ticket", "cross_cutting"}
 VALID_PRIORITIES = {"high", "medium", "low"}
 
@@ -170,13 +170,13 @@ def _get_signal_excerpt(
 
 def _call_claude(system: str, user: str, model: str, max_tokens: int) -> str:
     client = anthropic.Anthropic()
-    response = client.messages.create(
+    with client.messages.stream(
         model=model,
         max_tokens=max_tokens,
         system=system,
         messages=[{"role": "user", "content": user}],
-    )
-    return response.content[0].text
+    ) as stream:
+        return stream.get_final_text()
 
 
 def _parse_questions(raw: str, max_questions: int) -> list[Question]:

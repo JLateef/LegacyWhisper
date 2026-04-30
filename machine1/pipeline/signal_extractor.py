@@ -19,7 +19,7 @@ PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
 
 MAX_COMMITS_IN_PROMPT = 150
 MAX_FILES_IN_PROMPT = 60
-MAX_TOKENS_RESPONSE = 4096
+MAX_TOKENS_RESPONSE = 32000
 
 
 @dataclass
@@ -180,13 +180,13 @@ def _truncate(text: str, max_lines: int) -> str:
 
 def _call_claude(system: str, user: str, model: str, max_tokens: int) -> str:
     client = anthropic.Anthropic()
-    response = client.messages.create(
+    with client.messages.stream(
         model=model,
         max_tokens=max_tokens,
         system=system,
         messages=[{"role": "user", "content": user}],
-    )
-    return response.content[0].text
+    ) as stream:
+        return stream.get_final_text()
 
 
 def _parse_signals(raw: str) -> list[Signal]:

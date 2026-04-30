@@ -13,3 +13,7 @@ venv/
 
 # Claude Code internals
 .claude/
+
+# Machine 1 generated output
+machine1/report_*.html
+machine1/test_output.*

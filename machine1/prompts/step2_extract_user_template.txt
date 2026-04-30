@@ -1,0 +1,5 @@
+Question asked in interview: "{question_text}"
+
+Engineer's response: "{engineer_text}"
+
+Does this response contain knowledge a new engineer must know? Return JSON only.
