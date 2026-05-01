@@ -117,14 +117,14 @@ export function useVoice({ onTranscript, currentQuestion }) {
             if (text) {
               transcriptBuffer.current += ' ' + text;
               if (transcriptTimer.current) clearTimeout(transcriptTimer.current);
-              // Wait 2.5s of silence before submitting — gives engineer time to finish thought
+              // Wait 4.5s of silence before submitting — gives engineer time to finish thought
               transcriptTimer.current = setTimeout(() => {
                 const full = transcriptBuffer.current.trim();
                 if (full) {
                   onTranscript(full);
                   transcriptBuffer.current = '';
                 }
-              }, 2500);
+              }, 4500);
             }
           }
         }
