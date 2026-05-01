@@ -43,6 +43,30 @@ const FALLBACK_CODE_QUESTIONS = [
     knowledgeTag: 'context',
     followUps: [],
   },
+  {
+    id: 'f6',
+    text: "There's a time.sleep(0.3) inside the per-record loop in sync_products — not per batch, per record. Commit 97c8d9e is just titled 'increase sleep'. At 30k products that's 150 minutes of sleeping. Why 0.3 specifically, and what happens if someone removes it?",
+    knowledgeTag: 'risk',
+    followUps: [],
+  },
+  {
+    id: 'f7',
+    text: "_handle_legacy_format in transformers.py appears to have no direct callers anywhere in the codebase — grep and IDE navigation both show it as unused. Is it actually called? How would you know not to delete it during a cleanup?",
+    knowledgeTag: 'gotcha',
+    followUps: [],
+  },
+  {
+    id: 'f8',
+    text: "On August 2nd and 3rd, Aisha reverted 31 lines from storefront.py, then un-reverted them the next morning. What broke during those 24 hours, and which scenario is the current code still not handling?",
+    knowledgeTag: 'context',
+    followUps: [],
+  },
+  {
+    id: 'f9',
+    text: "SYNC-001 was reopened three times for weekend runs failing 15-20% more than weekdays, and the resolution just says 'Updated sync parameters.' What actually changed, and why do weekends behave differently?",
+    knowledgeTag: 'risk',
+    followUps: [],
+  },
 ];
 
 
@@ -175,7 +199,7 @@ export function useInterview() {
       const order = { high: 0, medium: 1, low: 2 };
       codeQuestions = [...questionPlan]
         .sort((a, b) => (order[a.priority] ?? 1) - (order[b.priority] ?? 1))
-        .slice(0, 5)
+        .slice(0, 9)
         .map((q, i) => ({
           id: `gq${i}`,
           text: q.question_text,
