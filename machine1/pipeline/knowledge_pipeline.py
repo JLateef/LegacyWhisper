@@ -430,7 +430,10 @@ def _build_html(items: List[KnowledgeItem], project_name: str) -> str:
     <div class="hdr-label">Legacy Whisperer</div>
     <div class="hdr-title">Handoff Doc — {project_name}</div>
   </div>
-  <div class="hdr-meta">{today}<br>{len(items)} knowledge items</div>
+  <div style="display:flex;align-items:center;gap:16px">
+    <div class="hdr-meta">{today}<br>{len(items)} knowledge items</div>
+    <button onclick="window.close()" style="background:#334155;color:#94a3b8;border:none;padding:8px 14px;border-radius:8px;font-size:12px;cursor:pointer;white-space:nowrap;transition:background .15s" onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">← Back</button>
+  </div>
 </div>
 
 <div class="tabs">{tabs_html}</div>

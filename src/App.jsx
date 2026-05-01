@@ -55,6 +55,7 @@ export default function App() {
             messages={messages}
             interviewee={interviewee}
             projectName={interviewee?.system || 'Project'}
+            onReset={resetInterview}
           />
         )}
       </div>

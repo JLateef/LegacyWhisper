@@ -7,7 +7,7 @@ function dl(content, filename, mime) {
   URL.revokeObjectURL(url);
 }
 
-export default function CompletionView({ messages, interviewee, projectName = 'Project' }) {
+export default function CompletionView({ messages, interviewee, projectName = 'Project', onReset }) {
   const [status, setStatus] = useState('preparing');
   const [report, setReport] = useState(null);
   const slug = projectName.toLowerCase().replace(/\s+/g, '-');
@@ -83,6 +83,13 @@ export default function CompletionView({ messages, interviewee, projectName = 'P
             Could not generate report. Make sure <code className="bg-rose-50 px-1 rounded">python server.py</code> is running.
           </p>
         )}
+
+        <button
+          onClick={onReset}
+          className="mt-8 text-xs text-slate-400 hover:text-slate-600 transition-colors"
+        >
+          ← Start a new interview
+        </button>
 
       </div>
     </div>
