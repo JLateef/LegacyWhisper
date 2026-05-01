@@ -11,7 +11,11 @@ Usage:
     Open http://localhost:5001
 """
 
+import os
+import shutil
 import sys
+import tempfile
+import zipfile
 from dataclasses import asdict
 from pathlib import Path
 
@@ -46,18 +50,68 @@ def index():
     return send_from_directory(DIST_DIR, "index.html")
 
 
-@app.route("/api/questions")
+@app.route("/api/questions", methods=["GET", "POST"])
 def api_questions():
-    """Run Machine 1 against the sample codebase. Takes ~60-90 seconds."""
-    print("\nMachine 1 starting — analyzing sample_codebase/...")
-    questions, signals = generate_questions(
-        codebase_path=str(SAMPLE_DIR),
-        commit_log_path=str(SAMPLE_DIR / "commit_history.txt"),
-        tickets_path=str(SAMPLE_DIR / "tickets.csv"),
-        verbose=True,
-    )
-    print(f"Machine 1 done — {len(questions)} questions from {len(signals)} signals\n")
-    return jsonify([asdict(q) for q in questions])
+    """
+    Run Machine 1 to generate interview questions.
+
+    POST with multipart form data to analyze uploaded files:
+      codebase  — ZIP of source files (required to use custom codebase)
+      commits   — git log text file (optional, improves question quality)
+      tickets   — tickets CSV file  (optional, improves question quality)
+
+    GET (or POST with no files) falls back to the built-in sample codebase.
+    """
+    codebase_file = request.files.get("codebase")
+    commits_file  = request.files.get("commits")
+    tickets_file  = request.files.get("tickets")
+
+    tmp_dir = None
+    try:
+        if codebase_file and codebase_file.filename:
+            tmp_dir = tempfile.mkdtemp()
+
+            # Extract uploaded ZIP
+            zip_path = os.path.join(tmp_dir, "upload.zip")
+            codebase_file.save(zip_path)
+            code_dir = os.path.join(tmp_dir, "code")
+            os.makedirs(code_dir)
+            with zipfile.ZipFile(zip_path, "r") as z:
+                z.extractall(code_dir)
+
+            commit_log_path = None
+            tickets_path = None
+
+            if commits_file and commits_file.filename:
+                commit_log_path = os.path.join(tmp_dir, "commits.txt")
+                commits_file.save(commit_log_path)
+
+            if tickets_file and tickets_file.filename:
+                tickets_path = os.path.join(tmp_dir, "tickets.csv")
+                tickets_file.save(tickets_path)
+
+            print(f"\nMachine 1 starting — analyzing uploaded codebase...")
+            questions, signals = generate_questions(
+                codebase_path=code_dir,
+                commit_log_path=commit_log_path,
+                tickets_path=tickets_path,
+                verbose=True,
+            )
+        else:
+            print("\nMachine 1 starting — analyzing sample_codebase/...")
+            questions, signals = generate_questions(
+                codebase_path=str(SAMPLE_DIR),
+                commit_log_path=str(SAMPLE_DIR / "commit_history.txt"),
+                tickets_path=str(SAMPLE_DIR / "tickets.csv"),
+                verbose=True,
+            )
+
+        print(f"Machine 1 done — {len(questions)} questions from {len(signals)} signals\n")
+        return jsonify([asdict(q) for q in questions])
+
+    finally:
+        if tmp_dir:
+            shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
 @app.route("/api/extract", methods=["POST"])

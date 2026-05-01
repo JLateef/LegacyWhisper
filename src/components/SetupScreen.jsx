@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 const LOADING_STEPS = [
   'Reading codebase structure...',
@@ -8,11 +8,29 @@ const LOADING_STEPS = [
   'Generating contextual questions...',
 ];
 
+function FileRow({ label, hint, file, inputRef, onChange }) {
+  return (
+    <label className="flex items-center gap-3 px-3 py-2.5 border border-dashed border-slate-200 rounded-lg cursor-pointer hover:border-indigo-300 hover:bg-indigo-50/30 transition-colors">
+      <div className="flex-1 min-w-0">
+        <div className="text-xs font-medium text-slate-700">{label}</div>
+        <div className="text-xs text-slate-400 truncate mt-0.5">{file ? file.name : hint}</div>
+      </div>
+      <span className={`text-xs font-medium flex-shrink-0 ${file ? 'text-emerald-600' : 'text-indigo-500'}`}>
+        {file ? '✓ Ready' : 'Choose'}
+      </span>
+      <input ref={inputRef} type="file" className="hidden" onChange={onChange} />
+    </label>
+  );
+}
+
 export default function SetupScreen({ onStart }) {
-  const [form, setForm] = useState({ name: '', title: '', system: 'Catalog Sync Service', years: '', email: '', team: '' });
+  const [form, setForm] = useState({ name: '', title: '', system: '', years: '', email: '', team: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
+  const [codebaseFile, setCodebaseFile] = useState(null);
+  const [commitsFile, setCommitsFile]   = useState(null);
+  const [ticketsFile, setTicketsFile]   = useState(null);
 
   const validate = () => {
     const e = {};
@@ -29,7 +47,7 @@ export default function SetupScreen({ onStart }) {
 
     setLoading(true);
 
-    // Cycle through loading steps while Machine 1 runs
+    // Cycle through loading steps while Machine 1 runs (~60s)
     let step = 0;
     const interval = setInterval(() => {
       step = Math.min(step + 1, LOADING_STEPS.length - 1);
@@ -37,13 +55,17 @@ export default function SetupScreen({ onStart }) {
     }, 14000);
 
     try {
-      const res = await fetch('/api/questions');
+      const body = new FormData();
+      if (codebaseFile) body.append('codebase', codebaseFile);
+      if (commitsFile)  body.append('commits',  commitsFile);
+      if (ticketsFile)  body.append('tickets',  ticketsFile);
+
+      const res = await fetch('/api/questions', { method: 'POST', body });
       const questions = await res.json();
       clearInterval(interval);
       onStart(form, questions);
     } catch {
       clearInterval(interval);
-      // Fall back to default questions if server isn't running
       onStart(form, null);
     }
   };
@@ -115,6 +137,38 @@ export default function SetupScreen({ onStart }) {
 
             {field('team', 'Team / Department', 'e.g. Platform Engineering')}
             {field('email', 'Email (for sharing outputs)', 'e.g. k.yamamoto@example.co.jp')}
+
+            {/* Codebase upload */}
+            <div className="border-t border-slate-100 pt-4">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-sm font-medium text-slate-700">Codebase Files</p>
+                <span className="text-xs text-slate-400">optional</span>
+              </div>
+              <p className="text-xs text-slate-400 mb-3">
+                Upload your code so the AI asks specific questions about it.
+                Skip to use the demo codebase.
+              </p>
+              <div className="space-y-2">
+                <FileRow
+                  label="Codebase ZIP"
+                  hint="ZIP your source directory"
+                  file={codebaseFile}
+                  onChange={e => setCodebaseFile(e.target.files[0] || null)}
+                />
+                <FileRow
+                  label="Git Log"
+                  hint="git log --all --stat --format=fuller > log.txt"
+                  file={commitsFile}
+                  onChange={e => setCommitsFile(e.target.files[0] || null)}
+                />
+                <FileRow
+                  label="Tickets CSV"
+                  hint="id, title, description, resolution, reopen_count"
+                  file={ticketsFile}
+                  onChange={e => setTicketsFile(e.target.files[0] || null)}
+                />
+              </div>
+            </div>
 
             <div className="pt-2">
               <button
