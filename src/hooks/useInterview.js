@@ -10,40 +10,41 @@ const INTRO_QUESTION = {
   followUps: [],
 };
 
-// Used when no Machine 1 question plan is available
+// Specific questions about the sample codebase — mirrors the test_step2.py transcript.
+// Used when Machine 1 hasn't run (no server) so the demo always asks code-anchored questions.
 const FALLBACK_CODE_QUESTIONS = [
-  { id: 'f1', text: "Let's start with the big picture — not the official description, but how you'd explain this system to someone joining the team tomorrow. What problem does it solve, and what depends on it?", knowledgeTag: 'system_overview', followUps: [] },
-  { id: 'f2', text: "What parts of this system are most fragile or poorly understood, even by you? Where would you tread very carefully before making changes?", knowledgeTag: 'fragile_areas', followUps: [] },
-  { id: 'f3', text: "What would you tell a new engineer on their first day that they'd never find written down? The setup gotchas, the non-obvious dependencies, the things that always trip people up.", knowledgeTag: 'onboarding_gotchas', followUps: [] },
-  { id: 'f4', text: "Are there any 'temporary' solutions that have quietly become permanent fixtures? Things that were meant to be replaced but have been running in production so long they're now load-bearing?", knowledgeTag: 'permanent_workarounds', followUps: [] },
-  { id: 'f5', text: "Finally — what would you warn your successor about? What do you wish someone had told you on your first day with this codebase?", knowledgeTag: 'lessons_learned', followUps: [] },
+  {
+    id: 'f1',
+    text: "config.py line 1 sets SYNC_CHUNK_SIZE = 847. That's a very specific number, and there are at least two 'update chunk size' commits in the history. Why that number and not something rounder like 1000 or 500?",
+    knowledgeTag: 'context',
+    followUps: [],
+  },
+  {
+    id: 'f2',
+    text: "In transformers.py line 19, normalize_price is called on the description field with a '# fix' comment. A function called normalize_price being applied to a description looks wrong — but the comment suggests it was intentional. What was that fixing?",
+    knowledgeTag: 'gotcha',
+    followUps: [],
+  },
+  {
+    id: 'f3',
+    text: "In connectors/storefront.py, StorefrontConflictError is caught and silently passed — no log, no counter, nothing. Why are 409 conflicts being silently dropped rather than logged or retried?",
+    knowledgeTag: 'decision',
+    followUps: [],
+  },
+  {
+    id: 'f4',
+    text: "ENABLE_DELTA_SYNC is set to False in config, but there's a full implementation of delta sync in sync_engine.py. Commit 5e39e0d is titled 'disable delta sync' after three fix commits. What was fundamentally broken, and what would need to be true to re-enable it safely?",
+    knowledgeTag: 'risk',
+    followUps: [],
+  },
+  {
+    id: 'f5',
+    text: "MERCHANT_OVERRIDE_IDS contains [1042, 7731] and forces those merchants through the v1 warehouse connector regardless of region. Why those specific merchants, and what breaks if they go through send_to_warehouse_v2?",
+    knowledgeTag: 'context',
+    followUps: [],
+  },
 ];
 
-// ── Demo mode (?demo=true) ─────────────────────────────────────────────────────
-// Pre-written answers that auto-submit after each AI question.
-// Covers both fallback questions and likely Machine 1 questions about sample_codebase.
-
-const DEMO_ANSWERS = [
-  // Intro
-  "I'm Alex Rivera, Senior Platform Engineer. I've been the primary maintainer of the Catalog Sync Service for about two and a half years.",
-  // SYNC_CHUNK_SIZE = 847
-  "847 is the maximum the warehouse API will accept per batch without failing silently. We discovered it empirically — tried 1000 first, got partial results with no error at all. Backed it down until it was stable. That number is sacred. Don't change it without getting written confirmation from the warehouse team.",
-  // normalize_price on description
-  "That's a hack from a bad supplier data import in late 2022. Their descriptions came with HTML entities everywhere — &amp;, &nbsp;, all of it. normalize_price already had string handling so I added the entity stripping in there and called it on descriptions too. The function name is completely misleading now. Removing the description call would silently corrupt that supplier's product data.",
-  // StorefrontConflictError
-  "The ops team manages about 50 products manually on the storefront — special pricing, custom configurations. When sync hits those, the storefront returns a 409. We were generating 60 alerts a day that ops immediately dismissed every single time. So we made the call to swallow them silently. The tradeoff is real — it's why some price discrepancies keep showing up and never fully resolve.",
-  // ENABLE_DELTA_SYNC
-  "Delta sync worked fine in testing but broke on a specific production edge case. When a product gets a catalog edit and a price update in the same sync window, the price update comes from a separate service that writes to price_updated_at, not updated_at. Our delta filter only checked updated_at. Those products silently stopped syncing their price changes. Fixing it properly required coordinating with the pricing team, which got deprioritized. I just disabled it.",
-  // MERCHANT_OVERRIDE_IDS
-  "Those two merchants were onboarded before we had the v2 warehouse API. They have data contracts specifying the old v1 payload format — different field names, different auth. If their records go through v2, the warehouse rejects the payload with a 422. The override forces them to v1 regardless of region. To sunset v1, you'd need to migrate their contracts with the warehouse team — they've had it on their backlog for over a year.",
-  // time.sleep(0.3)
-  "The storefront API has an undocumented rate limit on write operations, roughly 3 per second. We hit it the first production deployment — hundreds of 429 errors. Started at 0.1 seconds sleep, still got rate limited. Went to 0.2, still intermittent. Landed on 0.3 and it's been stable. It's per record, not per batch, because the limit is per request. At 30k products that's 150 minutes of sleeping. I know.",
-  // Fallback / general
-  "The thing I'd most warn my successor about is the settlement deadline. The sync job has to complete before 6 AM UTC for same-day clearing. Right now with 50k products we have maybe a 30-minute buffer. If the catalog grows much beyond that without us addressing the sleep-per-record issue, we'll start missing the deadline. Finance has no idea how close to the edge we are.",
-];
-
-const IS_DEMO = typeof window !== 'undefined' &&
-  new URLSearchParams(window.location.search).get('demo') === 'true';
 
 function extractPotentialPeople(text) {
   const found = new Set();
@@ -303,18 +304,6 @@ export function useInterview() {
     setActivePhases(PHASES);
     activePhasesRef.current = PHASES;
   }, []);
-
-  // Demo mode: auto-submit pre-written answers after each AI message
-  const demoAnswerIdx = useRef(0);
-  useEffect(() => {
-    if (!IS_DEMO || phase !== 'interview' || isTyping) return;
-    const last = messages[messages.length - 1];
-    if (!last || last.role !== 'ai') return;
-    const answer = DEMO_ANSWERS[demoAnswerIdx.current % DEMO_ANSWERS.length];
-    demoAnswerIdx.current += 1;
-    const t = setTimeout(() => sendMessage(answer), 1800);
-    return () => clearTimeout(t);
-  }, [messages, phase, isTyping, sendMessage]);
 
   // Progress tracking for the simplified single-phase flow
   const totalQuestions = activePhases.reduce((sum, p) => sum + p.questions.length, 0);
