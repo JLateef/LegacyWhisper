@@ -15,6 +15,8 @@ export function useVoice({ onTranscript, currentQuestion }) {
   const recRef = useRef(null);
   const questionRef = useRef(currentQuestion);
   const voiceRef = useRef(null); // populated after Chrome loads voices async
+  const transcriptBuffer = useRef('');
+  const transcriptTimer = useRef(null);
 
   // Refs track live state without stale closures inside event handlers
   const connectedRef = useRef(false);
@@ -112,7 +114,18 @@ export function useVoice({ onTranscript, currentQuestion }) {
         for (let i = e.resultIndex; i < e.results.length; i++) {
           if (e.results[i].isFinal) {
             const text = e.results[i][0].transcript.trim();
-            if (text) onTranscript(text);
+            if (text) {
+              transcriptBuffer.current += ' ' + text;
+              if (transcriptTimer.current) clearTimeout(transcriptTimer.current);
+              // Wait 2.5s of silence before submitting — gives engineer time to finish thought
+              transcriptTimer.current = setTimeout(() => {
+                const full = transcriptBuffer.current.trim();
+                if (full) {
+                  onTranscript(full);
+                  transcriptBuffer.current = '';
+                }
+              }, 2500);
+            }
           }
         }
       };
