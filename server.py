@@ -11,6 +11,7 @@ Usage:
     Open http://localhost:5001
 """
 
+import json
 import os
 import shutil
 import sys
@@ -34,6 +35,7 @@ from pipeline.knowledge_pipeline import (
 
 SAMPLE_DIR = MACHINE1_DIR / "sample_codebase"
 DIST_DIR = Path(__file__).parent / "dist"
+QUESTIONS_CACHE = Path(__file__).parent / "questions_cache.json"
 
 app = Flask(__name__, static_folder=str(DIST_DIR), static_url_path="")
 
@@ -69,9 +71,9 @@ def api_questions():
     tmp_dir = None
     try:
         if codebase_file and codebase_file.filename:
+            # Custom upload — always run Machine 1, no cache
             tmp_dir = tempfile.mkdtemp()
 
-            # Extract uploaded ZIP
             zip_path = os.path.join(tmp_dir, "upload.zip")
             codebase_file.save(zip_path)
             code_dir = os.path.join(tmp_dir, "code")
@@ -97,17 +99,27 @@ def api_questions():
                 tickets_path=tickets_path,
                 verbose=True,
             )
-        else:
-            print("\nMachine 1 starting — analyzing sample_codebase/...")
-            questions, signals = generate_questions(
-                codebase_path=str(SAMPLE_DIR),
-                commit_log_path=str(SAMPLE_DIR / "commit_history.txt"),
-                tickets_path=str(SAMPLE_DIR / "tickets.csv"),
-                verbose=True,
-            )
+            print(f"Machine 1 done — {len(questions)} questions\n")
+            return jsonify([asdict(q) for q in questions])
 
+        # Sample codebase — use cache if available
+        if QUESTIONS_CACHE.exists():
+            print("\nLoading questions from cache (instant)...")
+            return jsonify(json.loads(QUESTIONS_CACHE.read_text()))
+
+        print("\nMachine 1 starting — analyzing sample_codebase/ (this takes ~60s)...")
+        questions, signals = generate_questions(
+            codebase_path=str(SAMPLE_DIR),
+            commit_log_path=str(SAMPLE_DIR / "commit_history.txt"),
+            tickets_path=str(SAMPLE_DIR / "tickets.csv"),
+            verbose=True,
+        )
         print(f"Machine 1 done — {len(questions)} questions from {len(signals)} signals\n")
-        return jsonify([asdict(q) for q in questions])
+
+        questions_data = [asdict(q) for q in questions]
+        QUESTIONS_CACHE.write_text(json.dumps(questions_data, indent=2))
+        print(f"Questions cached to {QUESTIONS_CACHE.name} — future loads will be instant\n")
+        return jsonify(questions_data)
 
     finally:
         if tmp_dir:
