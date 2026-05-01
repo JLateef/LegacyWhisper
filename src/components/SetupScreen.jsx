@@ -28,6 +28,7 @@ export default function SetupScreen({ onStart }) {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
+  const [serverError, setServerError] = useState(false);
   const [codebaseFile, setCodebaseFile] = useState(null);
   const [commitsFile, setCommitsFile]   = useState(null);
   const [ticketsFile, setTicketsFile]   = useState(null);
@@ -66,7 +67,8 @@ export default function SetupScreen({ onStart }) {
       onStart(form, questions);
     } catch {
       clearInterval(interval);
-      onStart(form, null);
+      setLoading(false);
+      setServerError(true);
     }
   };
 
@@ -179,7 +181,7 @@ export default function SetupScreen({ onStart }) {
                 {loading ? 'Preparing your interview...' : 'Begin Knowledge Interview'}
               </button>
 
-              {loading ? (
+              {loading && (
                 <div className="mt-4 text-center">
                   <div className="inline-flex items-center gap-2 text-xs text-slate-500">
                     <svg className="animate-spin w-3 h-3 text-indigo-500" viewBox="0 0 24 24" fill="none">
@@ -190,9 +192,20 @@ export default function SetupScreen({ onStart }) {
                   </div>
                   <p className="text-xs text-slate-400 mt-1">This takes about 60 seconds</p>
                 </div>
-              ) : (
+              )}
+
+              {serverError && (
+                <div className="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-center">
+                  <p className="text-xs font-medium text-rose-700">Could not connect to the server</p>
+                  <p className="text-xs text-rose-500 mt-1">
+                    Run <code className="bg-rose-100 px-1 rounded">python server.py</code> then try again
+                  </p>
+                </div>
+              )}
+
+              {!loading && !serverError && (
                 <p className="text-center text-xs text-slate-400 mt-3">
-                  Estimated session: 30–40 minutes · Confidential
+                  Estimated session: 20–30 minutes · Confidential
                 </p>
               )}
             </div>
