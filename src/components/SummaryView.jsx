@@ -89,9 +89,30 @@ function SummarySection({ tag, entries }) {
   );
 }
 
-export default function SummaryView({ interviewee, knowledgeBase, connections, documents, phase }) {
+export default function SummaryView({ interviewee, knowledgeBase, connections, documents, phase, messages = [] }) {
   const sections = Object.entries(knowledgeBase).filter(([, entries]) => entries.length > 0);
   const totalResponses = sections.reduce((sum, [, entries]) => sum + entries.length, 0);
+  const [generating, setGenerating] = useState(false);
+
+  const handleGenerateDoc = async () => {
+    setGenerating(true);
+    try {
+      const res = await fetch('/api/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          transcript: messages,
+          projectName: interviewee?.system || 'Project',
+        }),
+      });
+      const data = await res.json();
+      const blob = new Blob([data.html], { type: 'text/html' });
+      window.open(URL.createObjectURL(blob), '_blank');
+    } catch (err) {
+      alert('Could not generate handoff doc. Make sure the server is running.');
+    }
+    setGenerating(false);
+  };
 
   const handleExport = () => {
     const lines = [];
@@ -151,15 +172,39 @@ export default function SummaryView({ interviewee, knowledgeBase, connections, d
           )}
         </div>
         {!isEmpty && (
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-2 text-sm bg-slate-900 text-white px-4 py-2 rounded-xl hover:bg-slate-800 transition-colors font-medium"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            Export Brief
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleGenerateDoc}
+              disabled={generating}
+              className="flex items-center gap-2 text-sm bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white px-4 py-2 rounded-xl transition-colors font-medium"
+            >
+              {generating ? (
+                <>
+                  <svg className="animate-spin w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                  </svg>
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  Generate Handoff Doc
+                </>
+              )}
+            </button>
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 text-sm bg-slate-900 text-white px-4 py-2 rounded-xl hover:bg-slate-800 transition-colors font-medium"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Export Brief
+            </button>
+          </div>
         )}
       </div>
 

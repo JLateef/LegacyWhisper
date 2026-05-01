@@ -60,12 +60,14 @@ export function useInterview() {
   const phaseIdxRef = useRef(0);
   const questionIdxRef = useRef(0);
   const followUpAskedRef = useRef(false);
+  const [activePhases, setActivePhases] = useState(PHASES);
+  const activePhasesRef = useRef(PHASES);
 
   useEffect(() => { phaseIdxRef.current = phaseIdx; }, [phaseIdx]);
   useEffect(() => { questionIdxRef.current = questionIdx; }, [questionIdx]);
   useEffect(() => { followUpAskedRef.current = followUpAsked; }, [followUpAsked]);
 
-  const currentPhase = PHASES[phaseIdx] || PHASES[PHASES.length - 1];
+  const currentPhase = activePhases[phaseIdx] || activePhases[activePhases.length - 1];
   const currentQuestion = currentPhase?.questions[questionIdx] || null;
 
   const addToKnowledge = useCallback((tag, content) => {
@@ -121,7 +123,28 @@ export function useInterview() {
     setDocuments(prev => [...prev, { ...doc, id: Date.now() + Math.random(), addedAt: new Date() }]);
   }, []);
 
-  const startInterview = useCallback(async (info) => {
+  const startInterview = useCallback(async (info, questionPlan = null) => {
+    // Build the phase plan — use Machine 1 output if provided, fall back to hardcoded PHASES
+    let phases = PHASES;
+    if (questionPlan && questionPlan.length > 0) {
+      phases = [{
+        id: 'generated',
+        name: 'Interview',
+        icon: '◆',
+        color: 'indigo',
+        description: 'Questions generated from your codebase',
+        estimatedMinutes: 40,
+        questions: questionPlan.map((q, i) => ({
+          id: `gq${i}`,
+          text: q.question_text,
+          knowledgeTag: q.reference_type || 'context',
+          followUps: [],
+        })),
+      }];
+    }
+    activePhasesRef.current = phases;
+    setActivePhases(phases);
+
     setInterviewee(info);
     setPhase('interview');
 
@@ -130,8 +153,8 @@ export function useInterview() {
     await delay(1600);
     setIsTyping(false);
 
-    const openingQ = PHASES[0].questions[0];
-    setMessages([makeMsg('ai', openingQ.text, PHASES[0].id, openingQ.knowledgeTag)]);
+    const openingQ = phases[0].questions[0];
+    setMessages([makeMsg('ai', openingQ.text, phases[0].id, openingQ.knowledgeTag)]);
   }, []);
 
   const sendMessage = useCallback(async (userText) => {
@@ -140,7 +163,7 @@ export function useInterview() {
     // Read from refs — always the latest values regardless of when this callback was created
     const curPhaseIdx = phaseIdxRef.current;
     const curQIdx = questionIdxRef.current;
-    const curPhase = PHASES[curPhaseIdx] || PHASES[PHASES.length - 1];
+    const curPhase = activePhasesRef.current[curPhaseIdx] || activePhasesRef.current[activePhasesRef.current.length - 1];
     const curQuestion = curPhase?.questions[curQIdx] || null;
 
     const userMsg = makeMsg('user', userText, curPhase?.id, curQuestion?.knowledgeTag);
@@ -190,8 +213,8 @@ export function useInterview() {
     } else {
       const nextPhaseIdx = curPhaseIdx + 1;
 
-      if (nextPhaseIdx < PHASES.length) {
-        const nextPhase = PHASES[nextPhaseIdx];
+      if (nextPhaseIdx < activePhasesRef.current.length) {
+        const nextPhase = activePhasesRef.current[nextPhaseIdx];
         const nextQ = nextPhase.questions[0];
         const transition = PHASE_TRANSITIONS[nextPhase.id] || '';
 
@@ -228,6 +251,8 @@ export function useInterview() {
     setDocuments([]);
     setKnowledgeBase({});
     setActiveView('interview');
+    setActivePhases(PHASES);
+    activePhasesRef.current = PHASES;
   }, []);
 
   const generateSummary = useCallback(() => {

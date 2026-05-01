@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 
+const LOADING_STEPS = [
+  'Reading codebase structure...',
+  'Scanning commit history...',
+  'Analyzing tickets...',
+  'Identifying knowledge gaps...',
+  'Generating contextual questions...',
+];
+
 export default function SetupScreen({ onStart }) {
-  const [form, setForm] = useState({ name: '', title: '', system: '', years: '', email: '', team: '' });
+  const [form, setForm] = useState({ name: '', title: '', system: 'Catalog Sync Service', years: '', email: '', team: '' });
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
 
   const validate = () => {
     const e = {};
@@ -12,11 +22,30 @@ export default function SetupScreen({ onStart }) {
     return e;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const e2 = validate();
-    if (Object.keys(e2).length) { setErrors(e2); return; }
-    onStart(form);
+    const errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+
+    setLoading(true);
+
+    // Cycle through loading steps while Machine 1 runs
+    let step = 0;
+    const interval = setInterval(() => {
+      step = Math.min(step + 1, LOADING_STEPS.length - 1);
+      setLoadingStep(step);
+    }, 14000);
+
+    try {
+      const res = await fetch('/api/questions');
+      const questions = await res.json();
+      clearInterval(interval);
+      onStart(form, questions);
+    } catch {
+      clearInterval(interval);
+      // Fall back to default questions if server isn't running
+      onStart(form, null);
+    }
   };
 
   const field = (key, label, placeholder, required = false) => (
@@ -90,13 +119,28 @@ export default function SetupScreen({ onStart }) {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl text-sm transition-colors"
+                disabled={loading}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-medium py-3 rounded-xl text-sm transition-colors"
               >
-                Begin Knowledge Interview
+                {loading ? 'Preparing your interview...' : 'Begin Knowledge Interview'}
               </button>
-              <p className="text-center text-xs text-slate-400 mt-3">
-                Estimated session: 60–90 minutes · Confidential
-              </p>
+
+              {loading ? (
+                <div className="mt-4 text-center">
+                  <div className="inline-flex items-center gap-2 text-xs text-slate-500">
+                    <svg className="animate-spin w-3 h-3 text-indigo-500" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                    </svg>
+                    {LOADING_STEPS[loadingStep]}
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">This takes about 60 seconds</p>
+                </div>
+              ) : (
+                <p className="text-center text-xs text-slate-400 mt-3">
+                  Estimated session: 30–40 minutes · Confidential
+                </p>
+              )}
             </div>
           </form>
         </div>

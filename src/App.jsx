@@ -122,6 +122,7 @@ export default function App() {
             connections={connections}
             documents={visibleDocuments}
             phase={phase}
+            messages={messages}
           />
         )}
       </div>

@@ -8,6 +8,8 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       proxy: {
+        '/api/questions': { target: 'http://localhost:5001', changeOrigin: true },
+        '/api/extract':   { target: 'http://localhost:5001', changeOrigin: true },
         '/api/voice-token': {
           target: 'https://vocalbridgeai.com',
           changeOrigin: true,
