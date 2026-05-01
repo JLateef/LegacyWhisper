@@ -138,7 +138,6 @@ def api_extract():
         {
             "speaker": "ai" if m["role"] == "ai" else "engineer",
             "text": m["content"],
-            "question_id": m.get("questionTag", ""),
         }
         for m in messages
     ]
