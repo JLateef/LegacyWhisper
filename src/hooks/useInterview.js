@@ -199,7 +199,7 @@ export function useInterview() {
       const order = { high: 0, medium: 1, low: 2 };
       codeQuestions = [...questionPlan]
         .sort((a, b) => (order[a.priority] ?? 1) - (order[b.priority] ?? 1))
-        .slice(0, 9)
+        .slice(0, 5)
         .map((q, i) => ({
           id: `gq${i}`,
           text: q.question_text,

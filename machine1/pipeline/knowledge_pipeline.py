@@ -19,7 +19,7 @@ import anthropic
 
 PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
 
-MIN_CONFIDENCE = 0.6
+MIN_CONFIDENCE = 0.45
 MAX_CODE_REFS_PER_ITEM = 3
 MAX_TOKENS = 2048
 
