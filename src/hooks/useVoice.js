@@ -57,7 +57,7 @@ export function useVoice({ onTranscript, currentQuestion }) {
 
     const clean = text.replace(/\n+/g, ' ').trim();
     const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 0.92;
+    utterance.rate = 1.15;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
