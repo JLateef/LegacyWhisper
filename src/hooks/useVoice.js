@@ -14,9 +14,12 @@ function pickVoice() {
 export function useVoice({ onTranscript, currentQuestion }) {
   const recRef = useRef(null);
   const questionRef = useRef(currentQuestion);
-  const voiceRef = useRef(null); // populated after Chrome loads voices async
+  const voiceRef = useRef(null);
+
+  // Patience tracking — submit only after 5s of true silence
   const transcriptBuffer = useRef('');
-  const transcriptTimer = useRef(null);
+  const lastSpeechRef = useRef(0);
+  const submitIntervalRef = useRef(null);
 
   // Refs track live state without stale closures inside event handlers
   const connectedRef = useRef(false);
@@ -59,7 +62,7 @@ export function useVoice({ onTranscript, currentQuestion }) {
 
     const clean = text.replace(/\n+/g, ' ').trim();
     const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 1.15;
+    utterance.rate = 1.08;
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
 
@@ -107,31 +110,33 @@ export function useVoice({ onTranscript, currentQuestion }) {
 
       const rec = new SR();
       rec.continuous = true;
-      rec.interimResults = false;
+      rec.interimResults = true; // fires continuously while speaking — used to track last speech time
       rec.lang = 'en-US';
 
       rec.onresult = (e) => {
+        // Update last speech timestamp on every result (interim or final)
+        lastSpeechRef.current = Date.now();
+
         for (let i = e.resultIndex; i < e.results.length; i++) {
           if (e.results[i].isFinal) {
             const text = e.results[i][0].transcript.trim();
-            if (text) {
-              transcriptBuffer.current += ' ' + text;
-              if (transcriptTimer.current) clearTimeout(transcriptTimer.current);
-              // Wait 4.5s of silence before submitting — gives engineer time to finish thought
-              transcriptTimer.current = setTimeout(() => {
-                const full = transcriptBuffer.current.trim();
-                if (full) {
-                  onTranscript(full);
-                  transcriptBuffer.current = '';
-                }
-              }, 4500);
-            }
+            if (text) transcriptBuffer.current += ' ' + text;
           }
         }
       };
 
+      // Poll every second — submit only after 5s of true silence
+      submitIntervalRef.current = setInterval(() => {
+        const content = transcriptBuffer.current.trim();
+        const silentFor = Date.now() - lastSpeechRef.current;
+        if (content && lastSpeechRef.current > 0 && silentFor > 5000) {
+          onTranscript(content);
+          transcriptBuffer.current = '';
+          lastSpeechRef.current = 0;
+        }
+      }, 500);
+
       rec.onerror = (e) => {
-        // no-speech and aborted are not real errors
         if (e.error === 'no-speech' || e.error === 'aborted') return;
         setError(`Microphone error: ${e.error}`);
       };
@@ -154,7 +159,6 @@ export function useVoice({ onTranscript, currentQuestion }) {
       setMicEnabled(true);
       setConnecting(false);
 
-      // Speak the current question; if none yet, start listening immediately
       if (questionRef.current?.text) {
         speak(questionRef.current.text);
       } else {
@@ -168,6 +172,9 @@ export function useVoice({ onTranscript, currentQuestion }) {
 
   const disconnect = useCallback(() => {
     window.speechSynthesis?.cancel();
+    if (submitIntervalRef.current) clearInterval(submitIntervalRef.current);
+    transcriptBuffer.current = '';
+    lastSpeechRef.current = 0;
     connectedRef.current = false;
     listeningRef.current = false;
     speakingRef.current = false;
@@ -196,6 +203,7 @@ export function useVoice({ onTranscript, currentQuestion }) {
   useEffect(() => {
     return () => {
       window.speechSynthesis?.cancel();
+      if (submitIntervalRef.current) clearInterval(submitIntervalRef.current);
       try { recRef.current?.stop(); } catch (_) {}
     };
   }, []);
